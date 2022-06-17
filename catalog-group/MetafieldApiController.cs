@@ -93,5 +93,80 @@ namespace Foundation.Custom
 
             return Ok(log);
         }
+        
+        [HttpGet]
+        [Route("AddCustomMetaFieldToContact")]
+        public async Task<ActionResult<string>> AddCustomMetaFieldToContact([FromQuery] string firstName = null)
+        {
+            string name = "FieldDemo1";
+            string friendlyName = name;
+
+            var typeName = MetaFieldType.CheckboxBoolean;
+            var metaClassName = ContactEntity.ClassName;
+            var metaClass = DataContext.Current.MetaModel.MetaClasses[metaClassName];
+
+            string log = "";
+            var existingField = metaClass.Fields[name];
+            if (existingField == null)
+            {
+                using(var builder = new MetaFieldBuilder(metaClass))
+                {
+                    builder.CreateText(name, friendlyName, true, 100, false);
+                    //builder.CreateLongText("ContactLongText", "Long Text", true);
+                    //builder.CreateInteger("ContactInetger", "Integer", true, 0);
+                    //builder.CreateDecimal("ContactDecimal", "Decimal", true, 0);
+                    //builder.CreateDateTime("ContactDateTime", "Date and Time", true, false);
+                    //builder.CreateGuid("ContactGuid", "Guid", true);
+                    //builder.CreateCheckBoxBoolean("ContactBoolean", "Boolean", true, false, "Boolean");
+                    builder.SaveChanges();
+                }
+
+                log += String.Format("Meta field {0} is added to meta class {1}", name, metaClassName);
+            }
+            else
+            {
+                log += String.Format("Meta field {0} is already exist in meta class {1}", name, metaClassName);
+            }
+
+            return Ok(log);
+        }
+
+        [HttpGet]
+        [Route("AddReferenceToContact")]
+        public async Task<ActionResult<string>> AddReferenceToContact([FromQuery] string firstName = null)
+        {
+            string name = "ReferenceFieldDemo2";
+            string friendlyName = name;
+
+            var typeName = MetaFieldType.CheckboxBoolean;
+            var metaClassName = ContactEntity.ClassName;
+            var parentMetaClassName = OrganizationEntity.ClassName;
+            var metaClass = DataContext.Current.MetaModel.MetaClasses[metaClassName];
+
+            string log = "";
+            var existingField = metaClass.Fields[name];
+            if (existingField == null)
+            {
+                using (var builder = new MetaFieldBuilder(metaClass))
+                {
+                    builder.CreateReference(name, friendlyName, true, parentMetaClassName, false);
+                    //builder.CreateLongText("ContactLongText", "Long Text", true);
+                    //builder.CreateInteger("ContactInetger", "Integer", true, 0);
+                    //builder.CreateDecimal("ContactDecimal", "Decimal", true, 0);
+                    //builder.CreateDateTime("ContactDateTime", "Date and Time", true, false);
+                    //builder.CreateGuid("ContactGuid", "Guid", true);
+                    //builder.CreateCheckBoxBoolean("ContactBoolean", "Boolean", true, false, "Boolean");
+                    builder.SaveChanges();
+                }
+
+                log += String.Format("Meta field {0} is added to meta class {1}", name, metaClassName);
+            }
+            else
+            {
+                log += String.Format("Meta field {0} is already exist in meta class {1}", name, metaClassName);
+            }
+
+            return Ok(log);
+        }
     }
 }
