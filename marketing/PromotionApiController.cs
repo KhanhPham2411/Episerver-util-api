@@ -1,7 +1,6 @@
 ﻿using EPiServer.Cms.UI.AspNetIdentity;
 using EPiServer.Commerce.Marketing;
 using EPiServer.Core;
-using EPiServer.Reference.Commerce.Shared.Identity;
 using EPiServer.ServiceLocation;
 using Mediachase.BusinessFoundation.Data;
 using Mediachase.BusinessFoundation.Data.Meta.Management;
