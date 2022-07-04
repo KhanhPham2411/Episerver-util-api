@@ -1,4 +1,6 @@
 ﻿using EPiServer.Cms.UI.AspNetIdentity;
+using EPiServer.ServiceLocation;
+using EPiServer.Shell.Security;
 using Foundation.Infrastructure.Cms.Users;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
