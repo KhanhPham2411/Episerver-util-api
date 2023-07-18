@@ -1,4 +1,4 @@
-﻿using EPiServer;
+using EPiServer;
 using EPiServer.Commerce.Catalog.ContentTypes;
 using EPiServer.Commerce.SpecializedProperties;
 using EPiServer.ServiceLocation;
@@ -37,7 +37,22 @@ namespace Foundation.Custom
             
             return Ok(log);
         }
-        
+
+        [HttpGet]
+        [Route("GetProductUrl")]
+        public async Task<ActionResult<string>> GetProductUrl([FromQuery] string code = null)
+        {
+            var _referenceConverter = ServiceLocator.Current.GetInstance<ReferenceConverter>();
+            var _urlResolver = ServiceLocator.Current.GetInstance<UrlResolver>();
+            string log = "";
+
+            var productContentLink = _referenceConverter.GetContentLink(code ?? "p-39813617");
+
+            log += $"Product Url: {_urlResolver.GetUrl(productContentLink)}";
+
+            return Ok(log);
+        }
+
         [HttpGet]
         [Route("CreateProduct")]
         public async Task<ActionResult<string>> CreateProduct([FromQuery] string code = null)
