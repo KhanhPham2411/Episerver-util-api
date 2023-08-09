@@ -1,5 +1,4 @@
 ﻿using EPiServer.Cms.UI.AspNetIdentity;
-using EPiServer.Reference.Commerce.Shared.Identity;
 using Mediachase.BusinessFoundation.Data;
 using Mediachase.BusinessFoundation.Data.Meta.Management;
 using Mediachase.Commerce.Customers;
@@ -15,7 +14,7 @@ using System.Threading.Tasks;
 namespace Foundation.Custom
 {
     [ApiController]
-    [Route("metafield-api")]
+    [Route("metafield")]
     public class MetafieldApiController : ControllerBase
     {
         public MetafieldApiController()
