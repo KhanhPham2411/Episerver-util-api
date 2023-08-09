@@ -3,8 +3,11 @@ using EPiServer.Reference.Commerce.Shared.Identity;
 using Mediachase.BusinessFoundation.Data;
 using Mediachase.BusinessFoundation.Data.Meta.Management;
 using Mediachase.Commerce.Customers;
+using Mediachase.Commerce.Orders;
+using Mediachase.MetaDataPlus.Configurator;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -167,6 +170,43 @@ namespace Foundation.Custom
             }
 
             return Ok(log);
+        }
+
+        [HttpGet]
+        [Route("AddPhoneNumberToOrder")]
+        public async Task<ActionResult<string>> AddPhoneNumberToOrder([FromQuery] string firstName = null)
+        {
+            var name = "PhoneNumber";
+            var metaNamespace = string.Empty;
+            var friendlyName = "PhoneNumber";
+            var description = string.Empty;
+            var metaFieldType = MetaDataType.ShortString;
+            var isNullable = true;
+            var length = 0;
+            var isMultiLanguage = false;
+            var isSearchable = false;
+            var isEncrypted = false;
+
+            var metaClass = OrderContext.Current.PurchaseOrderMetaClass;
+            if (metaClass.MetaFields.Any(x => x.Name == name))
+                return Ok(name + " metafield is already exists");
+
+            var metaContext = OrderContext.MetaDataContext;
+
+            var metaField = Mediachase.MetaDataPlus.Configurator.MetaField.Create(metaContext,
+                                           metaNamespace,
+                                           name,
+                                           friendlyName,
+                                           description,
+                                           metaFieldType,
+                                           length,
+                                           isNullable,
+                                           isMultiLanguage,
+                                           isSearchable,
+                                           isEncrypted);
+
+            metaClass.AddField(metaField);
+            return Ok(name + " metafield is added to metaclass " + metaClass.Name);
         }
     }
 }
