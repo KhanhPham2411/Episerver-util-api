@@ -1,4 +1,4 @@
-﻿using EPiServer.Cms.UI.AspNetIdentity;
+using EPiServer.Cms.UI.AspNetIdentity;
 using Mediachase.BusinessFoundation.Data;
 using Mediachase.BusinessFoundation.Data.Meta.Management;
 using Mediachase.Commerce.Customers;
@@ -58,10 +58,10 @@ namespace Foundation.Custom
 
             return Ok(log);
         }
-        
+
         [HttpGet]
         [Route("AddMetaFieldCheckboxBooleanAddress")]
-        public async Task<ActionResult<string>> AddMetaFieldCheckboxBooleanAddress([FromQuery] string firstName = null)
+        public async Task<ActionResult<string>> AddMetaFieldCheckboxBooleanAddress()
         {
             string name = "Attends";
             string friendlyName = name;
@@ -95,10 +95,10 @@ namespace Foundation.Custom
 
             return Ok(log);
         }
-        
+
         [HttpGet]
         [Route("AddCustomMetaFieldToContact")]
-        public async Task<ActionResult<string>> AddCustomMetaFieldToContact([FromQuery] string firstName = null)
+        public async Task<ActionResult<string>> AddCustomMetaFieldToContact()
         {
             string name = "FieldDemo1";
             string friendlyName = name;
@@ -111,7 +111,7 @@ namespace Foundation.Custom
             var existingField = metaClass.Fields[name];
             if (existingField == null)
             {
-                using(var builder = new MetaFieldBuilder(metaClass))
+                using (var builder = new MetaFieldBuilder(metaClass))
                 {
                     builder.CreateText(name, friendlyName, true, 100, false);
                     //builder.CreateLongText("ContactLongText", "Long Text", true);
@@ -135,7 +135,7 @@ namespace Foundation.Custom
 
         [HttpGet]
         [Route("AddReferenceToContact")]
-        public async Task<ActionResult<string>> AddReferenceToContact([FromQuery] string firstName = null)
+        public async Task<ActionResult<string>> AddReferenceToContact()
         {
             string name = "ReferenceFieldDemo2";
             string friendlyName = name;
@@ -173,13 +173,51 @@ namespace Foundation.Custom
 
         [HttpGet]
         [Route("AddPhoneNumberToOrder")]
-        public async Task<ActionResult<string>> AddPhoneNumberToOrder([FromQuery] string firstName = null)
+        public async Task<ActionResult<string>> AddPhoneNumberToOrder()
         {
             var name = "PhoneNumber";
             var metaNamespace = string.Empty;
             var friendlyName = "PhoneNumber";
             var description = string.Empty;
             var metaFieldType = MetaDataType.ShortString;
+            var isNullable = true;
+            var length = 0;
+            var isMultiLanguage = false;
+            var isSearchable = false;
+            var isEncrypted = false;
+
+            var metaClass = OrderContext.Current.PurchaseOrderMetaClass;
+            if (metaClass.MetaFields.Any(x => x.Name == name))
+                return Ok(name + " metafield is already exists");
+
+            var metaContext = OrderContext.MetaDataContext;
+
+            var metaField = Mediachase.MetaDataPlus.Configurator.MetaField.Create(metaContext,
+                                           metaNamespace,
+                                           name,
+                                           friendlyName,
+                                           description,
+                                           metaFieldType,
+                                           length,
+                                           isNullable,
+                                           isMultiLanguage,
+                                           isSearchable,
+                                           isEncrypted);
+
+            metaClass.AddField(metaField);
+            return Ok(name + " metafield is added to metaclass " + metaClass.Name);
+        }
+
+        [HttpGet]
+        [Route("AddEnumSingleToOrder")]
+        public async Task<ActionResult<string>> AddEnumSingleToOrder()
+        {
+
+            var name = "TestEnumSingle";
+            var metaNamespace = string.Empty;
+            var friendlyName = "TestEnumSingle";
+            var description = string.Empty;
+            var metaFieldType = MetaDataType.EnumSingleValue;
             var isNullable = true;
             var length = 0;
             var isMultiLanguage = false;
