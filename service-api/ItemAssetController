@@ -1,0 +1,67 @@
+using EPiServer.ServiceApi.Configuration;
+using EPiServer.ServiceApi.Validation;
+using EPiServer.ServiceApi.Commerce.Controllers.Catalog;
+using ControllerBase = EPiServer.ServiceApi.Commerce.Controllers.Catalog.ControllerBase;
+using AuthorizePermissionAttribute = EPiServer.ServiceApi.Configuration.AuthorizePermissionAttribute;
+using EPiServer.ServiceApi.Commerce;
+using Foundation.Features.Media;
+using EPiServer.DataAccess;
+using EPiServer.Security;
+using System.Configuration.Provider;
+
+namespace Foundation.Custom
+{
+    [Route("episerverapi/commerce")]
+    [RequireHttpsOrClose]
+    [ValidateReadOnlyMode(AllowedVerbs = HttpVerbs.Get)]
+    [ExceptionHandling]
+    [RequestLogging]
+    [Authorize(Policy = "ServiceApiAuthorizationPolicy")]
+    public class ItemAssetController : ControllerBase
+    {
+        private readonly IdentityMappingService _identityMappingService;
+        private readonly ReferenceConverter _referenceConverter;
+        private readonly IContentRepository _contentRepository;
+
+        public ItemAssetController(
+            IdentityMappingService identityMappingService,
+            ReferenceConverter referenceConverter,
+            IContentRepository contentRepository,
+            IContentLoader contentLoader,
+            IContentVersionRepository contentVersionRepository) : base(contentLoader, contentVersionRepository)
+        {
+            _identityMappingService = identityMappingService;
+            _referenceConverter = referenceConverter;
+            _contentRepository = contentRepository;
+        }
+
+        [Route("entries/{entryCode}/assets/{assetKey:guid}/properties/categories", Name = "SetAssetCategoriesByEntry")]
+        [HttpPut]
+        [AuthorizePermission("EPiServerServiceApi", "WriteAccess")]
+        public virtual IActionResult SetAssetCategoriesByEntry([FromEntryCode("entryCode")] string entryCode, Guid assetKey, [FromBody] string[] categories)
+        {
+            var mappedIdentity = _identityMappingService.Get(assetKey);
+            //mappedIdentity = _identityMappingService.Get(MappedIdentity.ConstructExternalIdentifier(providerName, integrationId));
+
+            if (mappedIdentity == null)
+                return NotFound($"No mapping found for asset with ID {assetKey} on entry {entryCode}");
+
+            var contentLink = _referenceConverter.GetContentLink(entryCode);
+
+            var entryContentBase = _contentLoader.Get<EntryContentBase>(contentLink);
+
+            var commerceMedia =
+                entryContentBase.CommerceMediaCollection.FirstOrDefault(media => media.AssetLink.ID == mappedIdentity.ContentLink.ID);
+
+            if (commerceMedia == null || !_contentRepository.TryGet<ImageMediaData>(commerceMedia.AssetLink, out var genericMedia))
+                return NotFound();
+
+            genericMedia = (ImageMediaData) genericMedia.CreateWritableClone();
+            genericMedia.ImageCategories = categories;
+
+            _contentRepository.Save(genericMedia, SaveAction.Publish, AccessLevel.NoAccess);
+
+            return Ok();
+        }
+    }
+}
