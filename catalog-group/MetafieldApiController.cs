@@ -23,6 +23,69 @@ namespace Foundation.Custom
         }
 
         [HttpGet]
+        [Route("DeleteMetaField")]
+        public async Task<ActionResult<string>> DeleteMetaField([FromQuery] string name = null)
+        {
+            if (String.IsNullOrEmpty(name)) 
+            {
+                name = "TestMaxLength";
+            }
+
+            string log = "";
+            var metaClassname = OrganizationEntity.ClassName;
+            var orgMetaClass = DataContext.Current.MetaModel.MetaClasses[metaClassname];
+            var metaClass = orgMetaClass; 
+            var existingField = metaClass.Fields[name];
+
+            if (existingField != null)
+            {
+                metaClass.DeleteMetaField(existingField);
+                log += String.Format("Meta field {0} is deleted to meta class {1}", name, metaClassname);
+            }
+            else
+            {
+                log += String.Format("Meta field {0} is not exist in meta class {1}", name, metaClassname);
+            }
+            return Ok(log);
+        }
+
+        [HttpGet]
+        [Route("AddMetaFieldWithoutMaxLengthOrganization")]
+        public async Task<ActionResult<string>> AddMetaFieldWithoutMaxLengthOrganization([FromQuery] string name = null)
+        {
+            if (String.IsNullOrEmpty(name))
+            {
+                name = "Testv1";
+            }
+
+            string friendlyName = name;
+
+            var typeName = MetaFieldType.Text;
+            var orgMetaClass = DataContext.Current.MetaModel.MetaClasses[OrganizationEntity.ClassName];
+            var metaClass = orgMetaClass;
+
+            string log = "";
+            var existingField = metaClass.Fields[name];
+            if (existingField == null)
+            {
+                var attributes = new Mediachase.BusinessFoundation.Data.Meta.Management.AttributeCollection
+                {
+                    { McDataTypeAttribute.StringLongText, friendlyName }
+                };
+
+                metaClass.CreateMetaField(name, friendlyName, typeName, true, "", attributes);
+                
+                log += String.Format("Meta field {0} is added to meta class {1}", name, OrganizationEntity.ClassName);
+            }
+            else
+            {
+                log += String.Format("Meta field {0} is already exist in meta class {1}", name, OrganizationEntity.ClassName);
+            }
+
+            return Ok(log);
+        }
+
+        [HttpGet]
         [Route("AddMetaFieldCheckboxBooleanOrganization")]
         public async Task<ActionResult<string>> AddMetaFieldCheckboxBooleanOrganization([FromQuery] string firstName = null)
         {
