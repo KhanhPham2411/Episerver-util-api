@@ -21,6 +21,36 @@ namespace Foundation.Custom
         {
 
         }
+        
+        [HttpGet]
+        [Route("CreateMetaClassPrimaryKey")]
+        public async Task<ActionResult<string>> CreateMetaClassPrimaryKey([FromQuery] string name = null)
+        {
+            if (String.IsNullOrEmpty(name))
+            {
+                name = "TestMetaClass";
+            }
+            string log = "";
+
+
+            var dataContext = DataContext.Current;
+            if (dataContext.MetaModel.MetaClasses.Contains(name))
+            {
+                log += String.Format("Meta class {0} is already exist", name);
+                return log;
+            }
+
+            MetaClass metaClass = dataContext.MetaModel.CreateMetaClass(
+                name,
+                name,
+                name + "s",
+                "cls_" + name,
+                PrimaryKeyIdValueType.Integer);
+
+            log += String.Format("Meta class {0} is created successfully", name);
+
+            return Ok(log);
+        }
 
         [HttpGet]
         [Route("DeleteMetaField")]
