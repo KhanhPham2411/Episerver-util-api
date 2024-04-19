@@ -35,9 +35,9 @@ namespace Foundation.Custom
         }
 
         [HttpGet]
-        [Route("GetCreditCard")]
+        [Route("GetCreditCardSuccess")]
 
-        public async Task<ActionResult<string>> GetCreditCard([FromQuery] string firstName = null)
+        public async Task<ActionResult<string>> GetCreditCardSuccess([FromQuery] string firstName = null)
         {
             var contact = CustomerContext.Current.CurrentContact;
 
@@ -48,6 +48,19 @@ namespace Foundation.Custom
             var cards = BusinessManager.List(CreditCard.ClassName, new[] { filterByContactId });
             var cardTypes = cards.OfType<CreditCard>().ToList(); // it seem failed to convert the type and make the list empty
 
+            var cartsText = cards.Select(c => c.Properties["LastFourDigits"].Value);
+
+            return Ok(string.Join(",", cartsText));
+        }
+
+        [HttpGet]
+        [Route("GetCreditCardFailed")]
+
+        public async Task<ActionResult<string>> GetCreditCardFailed([FromQuery] string firstName = null)
+        {
+            var contact = CustomerContext.Current.CurrentContact;
+
+            var cards = contact.ContactCreditCards.ToList();
             var cartsText = cards.Select(c => c.Properties["LastFourDigits"].Value);
 
             return Ok(string.Join(",", cartsText));
