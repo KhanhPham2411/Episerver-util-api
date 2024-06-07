@@ -1,6 +1,7 @@
 using EPiServer.Cms.UI.AspNetIdentity;
 using Mediachase.BusinessFoundation.Data;
 using Mediachase.BusinessFoundation.Data.Meta.Management;
+using Mediachase.BusinessFoundation.Data.Sql.Management;
 using Mediachase.Commerce.Customers;
 using Mediachase.Commerce.Orders;
 using Mediachase.MetaDataPlus.Configurator;
@@ -21,7 +22,7 @@ namespace Foundation.Custom
         {
 
         }
-        
+
         [HttpGet]
         [Route("CreateMetaClassPrimaryKey")]
         public async Task<ActionResult<string>> CreateMetaClassPrimaryKey([FromQuery] string name = null)
@@ -40,7 +41,7 @@ namespace Foundation.Custom
                 return log;
             }
 
-            MetaClass metaClass = dataContext.MetaModel.CreateMetaClass(
+            Mediachase.BusinessFoundation.Data.Meta.Management.MetaClass metaClass = dataContext.MetaModel.CreateMetaClass(
                 name,
                 name,
                 name + "s",
@@ -56,7 +57,7 @@ namespace Foundation.Custom
         [Route("DeleteMetaField")]
         public async Task<ActionResult<string>> DeleteMetaField([FromQuery] string name = null)
         {
-            if (String.IsNullOrEmpty(name)) 
+            if (String.IsNullOrEmpty(name))
             {
                 name = "TestMaxLength";
             }
@@ -64,7 +65,7 @@ namespace Foundation.Custom
             string log = "";
             var metaClassname = OrganizationEntity.ClassName;
             var orgMetaClass = DataContext.Current.MetaModel.MetaClasses[metaClassname];
-            var metaClass = orgMetaClass; 
+            var metaClass = orgMetaClass;
             var existingField = metaClass.Fields[name];
 
             if (existingField != null)
@@ -104,7 +105,7 @@ namespace Foundation.Custom
                 };
 
                 metaClass.CreateMetaField(name, friendlyName, typeName, true, "", attributes);
-                
+
                 log += String.Format("Meta field {0} is added to meta class {1}", name, OrganizationEntity.ClassName);
             }
             else
@@ -193,7 +194,7 @@ namespace Foundation.Custom
         [Route("AddCustomMetaFieldToContact")]
         public async Task<ActionResult<string>> AddCustomMetaFieldToContact()
         {
-            string name = "FieldDemo1";
+            string name = "FieldDemo4";
             string friendlyName = name;
 
             var typeName = MetaFieldType.CheckboxBoolean;
@@ -206,7 +207,7 @@ namespace Foundation.Custom
             {
                 using (var builder = new MetaFieldBuilder(metaClass))
                 {
-                    builder.CreateText(name, friendlyName, true, 100, false);
+                    builder.CreateText(name, friendlyName, true, 200, false);
                     //builder.CreateLongText("ContactLongText", "Long Text", true);
                     //builder.CreateInteger("ContactInetger", "Integer", true, 0);
                     //builder.CreateDecimal("ContactDecimal", "Decimal", true, 0);
@@ -222,6 +223,55 @@ namespace Foundation.Custom
             {
                 log += String.Format("Meta field {0} is already exist in meta class {1}", name, metaClassName);
             }
+
+            return Ok(log);
+        }
+
+        [HttpGet]
+        [Route("UpdateMaxLengthMetaFieldOfContact")]
+        public async Task<ActionResult<string>> UpdateMaxLengthMetaFieldOfContact()
+        {
+            string name = "FieldDemo2";
+            string friendlyName = name;
+
+            var typeName = MetaFieldType.CheckboxBoolean;
+            var metaClassName = ContactEntity.ClassName;
+            var metaClass = DataContext.Current.MetaModel.MetaClasses[metaClassName];
+
+            string log = "";
+            var existingField = metaClass.Fields[name];
+            if (existingField == null)
+            {
+                log += String.Format("Meta field {0} is not exist in meta class {1}", name, metaClassName);
+            }
+            else
+            {
+                using (MetaClassManagerEditScope editScope = DataContext.Current.MetaModel.BeginEdit())
+                {
+                    existingField.Attributes.Remove("Maxlength");
+                    existingField.Attributes.Add("Maxlength", 300);
+                    editScope.SaveChanges();
+                }
+
+                log += String.Format("Meta field {0} is changed the max length in meta class {1}", name, metaClassName);
+            }
+
+            return Ok(log);
+        }
+
+        [HttpGet]
+        [Route("ExecuteTableSPCreateScript")]
+        public async Task<ActionResult<string>> ExecuteTableSPCreateScript()
+        {
+
+            var metaClassName = ContactEntity.ClassName;
+            var metaClass = DataContext.Current.MetaModel.MetaClasses[metaClassName];
+
+            string log = "";
+            
+            Database.ExecuteTableSPCreateScript(metaClass.GetTableConfig());
+            log += String.Format("ExecuteTableSPCreateScript on Meta class {0}", metaClassName);
+
 
             return Ok(log);
         }
