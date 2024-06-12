@@ -22,6 +22,28 @@ namespace Foundation.Custom
         }
 
         #region CatalogContext
+        [HttpGet]
+        [Route("listCatalogMetaClass")]
+        public async Task<ActionResult<string>> listCatalogMetaClass([FromQuery] string demo = null)
+        {
+            if (String.IsNullOrEmpty(demo))
+            {
+                demo = "demo";
+            }
+            string log = "";
+
+
+            var metaClassCollection = Mediachase.MetaDataPlus.Configurator.MetaClass.GetList(CatalogContext.MetaDataContext, true);
+            var result = metaClassCollection.Cast<Mediachase.MetaDataPlus.Configurator.MetaClass>()
+                        .Where(c => c.IsCatalogMetaClass);
+
+            log += "List of user metaclass:\n";
+            log += string.Join("\n", result.Select(s => s.Name));
+
+
+            return Ok(log);
+        }
+
 
         [HttpGet]
         [Route("listUserMetaClass")]
@@ -68,7 +90,8 @@ namespace Foundation.Custom
         }
 
 
-        public MetaField createMetaFieldInternal(string name) {
+        public MetaField createMetaFieldInternal(string name)
+        {
             var metaNamespace = string.Empty;
             var friendlyName = name;
             var description = string.Empty;
@@ -124,7 +147,8 @@ namespace Foundation.Custom
             var metaClassName = "GenericProduct";
 
             var metaField = MetaField.Load(CatalogContext.MetaDataContext, metaFieldName);
-            if (metaField == null) {
+            if (metaField == null)
+            {
                 log += $"Creating the field {metaFieldName} due to not found \n";
                 metaField = createMetaFieldInternal(metaFieldName);
             }
