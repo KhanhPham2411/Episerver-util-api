@@ -6,6 +6,7 @@ using Mediachase.BusinessFoundation.Data.Meta.Management;
 using Mediachase.Commerce.Orders;
 using Mediachase.MetaDataPlus;
 using Mediachase.MetaDataPlus.Configurator;
+using Serilog;
 using System.Drawing.Imaging;
 using MetaClass = Mediachase.MetaDataPlus.Configurator.MetaClass;
 using MetaField = Mediachase.MetaDataPlus.Configurator.MetaField;
@@ -22,28 +23,6 @@ namespace Foundation.Custom
         }
 
         #region CatalogContext
-        [HttpGet]
-        [Route("listCatalogMetaClass")]
-        public async Task<ActionResult<string>> listCatalogMetaClass([FromQuery] string demo = null)
-        {
-            if (String.IsNullOrEmpty(demo))
-            {
-                demo = "demo";
-            }
-            string log = "";
-
-
-            var metaClassCollection = Mediachase.MetaDataPlus.Configurator.MetaClass.GetList(CatalogContext.MetaDataContext, true);
-            var result = metaClassCollection.Cast<Mediachase.MetaDataPlus.Configurator.MetaClass>()
-                        .Where(c => c.IsCatalogMetaClass);
-
-            log += "List of user metaclass:\n";
-            log += string.Join("\n", result.Select(s => s.Name));
-
-
-            return Ok(log);
-        }
-
 
         [HttpGet]
         [Route("listUserMetaClass")]
@@ -90,8 +69,7 @@ namespace Foundation.Custom
         }
 
 
-        public MetaField createMetaFieldInternal(string name)
-        {
+        public MetaField createMetaFieldInternal(string name) {
             var metaNamespace = string.Empty;
             var friendlyName = name;
             var description = string.Empty;
@@ -135,6 +113,58 @@ namespace Foundation.Custom
             return Ok(log);
         }
 
+
+        [HttpGet]
+        [Route("loadMetaField")]
+        public async Task<ActionResult<string>> loadMetaField([FromQuery] string metaFieldName = null) {
+            if (String.IsNullOrEmpty(metaFieldName))
+            {
+                metaFieldName = "TestField";
+            }
+            string log = "";
+
+            var metaField = MetaField.Load(CatalogContext.MetaDataContext, metaFieldName);
+            if (metaField == null)
+            {
+                log += $"The field {metaFieldName} not found \n";
+                return log;
+            }
+
+            log += $"The field {metaField.Name} is found with the info: {metaField.DataType}, {metaField.FriendlyName}\n";
+            return Ok(log);
+        }
+
+        [HttpGet]
+        [Route("unlinkMetaField")]
+        public async Task<ActionResult<string>> unlinkMetaField(
+            [FromQuery] string metaFieldName = "TestField",
+            [FromQuery] string metaClassName = "GenericProduct"
+        )
+        {
+            string log = "";
+
+            var metaField = MetaField.Load(CatalogContext.MetaDataContext, metaFieldName);
+            if (metaField == null)
+            {
+                log += $"The field {metaFieldName} not found \n";
+                return log;
+            }
+
+            log += $"The field {metaField.Name} is found with the info: {metaField.DataType}, {metaField.FriendlyName}\n";
+
+            var metaClass = MetaClass.Load(CatalogContext.MetaDataContext, metaClassName);
+
+            if (metaClass.MetaFields.Contains(metaField))
+            {
+                metaClass.DeleteField(metaField);
+                log += $"Successfully, field {metaField.Name} has been unlink from class {metaClass.Name}";
+                return Ok(log);
+            }
+
+            log += $"Failed, field {metaField.Name} not linked to class {metaClass.Name}";
+            return Ok(log);
+        }
+
         [HttpGet]
         [Route("addMetaField")]
         public async Task<ActionResult<string>> addMetaField([FromQuery] string metaFieldName = null)
@@ -147,8 +177,7 @@ namespace Foundation.Custom
             var metaClassName = "GenericProduct";
 
             var metaField = MetaField.Load(CatalogContext.MetaDataContext, metaFieldName);
-            if (metaField == null)
-            {
+            if (metaField == null) {
                 log += $"Creating the field {metaFieldName} due to not found \n";
                 metaField = createMetaFieldInternal(metaFieldName);
             }
