@@ -20,7 +20,7 @@ namespace Foundation.Custom
 
             int objectId = int.Parse(contentId) & InformationBitMask;
 
-            log += $"The decoded values from the content ID -2147483642 are: {objectId}";
+            log += $"The decoded values from the content ID ${contentId} are: {objectId}";
             return Ok(log);
         }
 
