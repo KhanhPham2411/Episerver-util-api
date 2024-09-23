@@ -2,3 +2,20 @@ SELECT [Provider], [ProviderUniqueId], COUNT(*)
 FROM [dbo].[tblMappedIdentity]
 GROUP BY [Provider], [ProviderUniqueId]
 HAVING COUNT(*) > 1
+
+
+SELECT TOP (1000) c.[pkID]
+	,cl.[Name]
+	,cl.[URLSegment]
+	,ct.[Name] as TypeName
+	,cl.[Created]
+	,[fkParentID]
+  ,[fkContentTypeID]
+FROM [dbo].[tblContent] c
+  JOIN [dbo].[tblContentType] ct on c.fkContentTypeID = ct.pkID
+  JOIN [dbo].[tblContentLanguage] cl on cl.fkContentID = c.pkID
+	JOIN [dbo].[tblMappedIdentity] mi on c.[pkID] = mi.[ExistingContentId]
+WHERE mi.[ProviderUniqueId] in (SELECT [ProviderUniqueId]
+	FROM [dbo].[tblMappedIdentity]
+	GROUP BY [Provider], [ProviderUniqueId]
+	HAVING COUNT(*) > 1)
