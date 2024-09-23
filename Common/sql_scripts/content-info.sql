@@ -1,6 +1,7 @@
 SELECT TOP (1000) c.[pkID]
-	,ct.[Name]
+	,cl.[Name]
 	,cl.[URLSegment]
+	,ct.[Name] as TypeName
 	,cl.[Created]
 	,[fkParentID]
   ,[fkContentTypeID]
