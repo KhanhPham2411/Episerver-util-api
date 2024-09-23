@@ -1,0 +1,4 @@
+SELECT [Provider], [ProviderUniqueId], COUNT(*)
+FROM [dbo].[tblMappedIdentity]
+GROUP BY [Provider], [ProviderUniqueId]
+HAVING COUNT(*) > 1
