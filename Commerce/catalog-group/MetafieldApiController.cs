@@ -268,7 +268,7 @@ namespace Foundation.Custom
             var metaClass = DataContext.Current.MetaModel.MetaClasses[metaClassName];
 
             string log = "";
-            
+
             Database.ExecuteTableSPCreateScript(metaClass.GetTableConfig());
             log += String.Format("ExecuteTableSPCreateScript on Meta class {0}", metaClassName);
 
@@ -387,6 +387,48 @@ namespace Foundation.Custom
 
             metaClass.AddField(metaField);
             return Ok(name + " metafield is added to metaclass " + metaClass.Name);
+        }
+
+        [HttpGet]
+        [Route("SetReadOnlyContactField")]
+        public async Task<ActionResult<string>> SetReadOnlyContactField([FromQuery] string fieldName = "FirstName", 
+            [FromQuery] bool value = true
+        )
+        {
+            SetReadOnlyFieldsValue(new string[] { fieldName }, value);
+            return "";
+        }
+
+        private void SetReadOnlyFieldsValue(IEnumerable<string> fieldNames, bool value)
+        {
+            bool fieldsUpdated = false;
+
+            var metaClassName = ContactEntity.ClassName;
+            var customerMetadata = DataContext.Current.MetaModel.MetaClasses[metaClassName];
+
+            foreach (string fieldName in fieldNames)
+            {
+                if (customerMetadata.Fields[fieldName] != null)
+                {
+                    if (customerMetadata.Fields[fieldName].ReadOnly == value)
+                    {
+                        continue;
+                    }
+
+                    var field = customerMetadata.Fields[fieldName];
+                    field.ReadOnly = value;
+
+                    fieldsUpdated = true;
+                }
+            }
+
+            if (fieldsUpdated)
+            {
+                using (MetaClassManagerEditScope editScope = DataContext.Current.MetaModel.BeginEdit())
+                {
+                    editScope.SaveChanges();
+                }
+            }
         }
     }
 }
