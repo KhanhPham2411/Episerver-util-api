@@ -391,7 +391,7 @@ namespace Foundation.Custom
 
         [HttpGet]
         [Route("SetReadOnlyContactField")]
-        public async Task<ActionResult<string>> SetReadOnlyContactField([FromQuery] string fieldName = "FirstName", 
+        public async Task<ActionResult<string>> SetReadOnlyContactField([FromQuery] string fieldName = "UserLocation", 
             [FromQuery] bool value = true
         )
         {
