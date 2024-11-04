@@ -1,0 +1,32 @@
+
+using Foundation.Infrastructure.Cms.Settings;
+
+
+namespace Foundation.Custom
+{
+    [ApiController]
+    [Route("settings")]
+    public class SettingsApiController : ControllerBase
+    {
+        private readonly ISettingsService _settingsService;
+
+        public SettingsApiController(ISettingsService settingsService)
+        {
+            _settingsService = settingsService;
+        }
+
+        [HttpGet]
+        [Route("label")]
+        public async Task<ActionResult<string>> label([FromQuery] string keyword = "a")
+        {
+            string log = "";
+
+            var labelSettings = _settingsService.GetSiteSettings<LabelSettings>();
+
+            log += "TestXhtmlString: " + labelSettings.TestXhtmlString + "\n";
+
+            return Ok(log);
+        }
+
+    }
+}
