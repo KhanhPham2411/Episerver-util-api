@@ -15,7 +15,7 @@ namespace Foundation.Custom
     [Route("business-manager")]
     public class BusinessManagerApiController : ControllerBase
     {
-       
+
 
         public BusinessManagerApiController()
         {
@@ -29,7 +29,7 @@ namespace Foundation.Custom
 
             var metaClassName = "Organization";
             var filters = new List<FilterElement>().ToArray();
-            
+
             var items = List(metaClassName, filters);
 
             log += string.Join(",", items.Select(s => s.Properties["Name"].Value));
@@ -39,9 +39,33 @@ namespace Foundation.Custom
         public static EntityObject[] List(string metaClassName, FilterElement[] filters)
         {
             var baseResponse = BusinessManager.Execute(new ListRequest(metaClassName, filters));
+            if (baseResponse == null) 
+            { 
+                return new EntityObject[0];
+            }
+
             ListResponse response = (ListResponse)baseResponse;
 
             return response.EntityObjects ?? new EntityObject[0];
+        }
+
+        public static EntityObject Load(string metaClassName, PrimaryKeyId primaryKeyId)
+        {
+            try
+            {
+                var baseResponse = BusinessManager.Execute(new LoadRequest(new EntityObject(metaClassName, primaryKeyId)));
+                if (baseResponse == null)
+                {
+                    return null;
+                }
+
+                LoadResponse response = (LoadResponse)baseResponse;
+                return response.EntityObject;
+            }
+            catch (Mediachase.BusinessFoundation.Data.Meta.ObjectNotFoundException)
+            {
+                return null;
+            }
         }
     }
 }
