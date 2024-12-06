@@ -36,6 +36,21 @@ namespace Foundation.Custom
             return Ok(log);
         }
 
+        [HttpGet]
+        [Route("load")]
+        public async Task<ActionResult<string>> load([FromQuery] string keyword = "a")
+        {
+            string log = "";
+
+            var metaClassName = "Organization";
+            var primaryKeyId = new PrimaryKeyId(Guid.Empty);
+
+            var item = Load(metaClassName, primaryKeyId);
+
+            log += item.Properties["Name"].Value;
+            return Ok(log);
+        }
+
         public static EntityObject[] List(string metaClassName, FilterElement[] filters)
         {
             var baseResponse = BusinessManager.Execute(new ListRequest(metaClassName, filters));
