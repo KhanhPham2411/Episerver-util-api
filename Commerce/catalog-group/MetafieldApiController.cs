@@ -6,9 +6,8 @@ using Mediachase.Commerce.Customers;
 using Mediachase.Commerce.Orders;
 using Mediachase.MetaDataPlus.Configurator;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Serilog;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -59,11 +58,12 @@ namespace Foundation.Custom
         {
             if (String.IsNullOrEmpty(name))
             {
-                name = "TestMaxLength";
+                name = "ThemeId";
             }
 
             string log = "";
-            var metaClassname = OrganizationEntity.ClassName;
+            var metaClassname = ContactEntity.ClassName;
+
             var orgMetaClass = DataContext.Current.MetaModel.MetaClasses[metaClassname];
             var metaClass = orgMetaClass;
             var existingField = metaClass.Fields[name];
@@ -71,6 +71,7 @@ namespace Foundation.Custom
             if (existingField != null)
             {
                 metaClass.DeleteMetaField(existingField);
+                
                 log += String.Format("Meta field {0} is deleted to meta class {1}", name, metaClassname);
             }
             else
@@ -391,7 +392,7 @@ namespace Foundation.Custom
 
         [HttpGet]
         [Route("SetReadOnlyContactField")]
-        public async Task<ActionResult<string>> SetReadOnlyContactField([FromQuery] string fieldName = "UserLocation", 
+        public async Task<ActionResult<string>> SetReadOnlyContactField([FromQuery] string fieldName = "UserLocation",
             [FromQuery] bool value = true
         )
         {
