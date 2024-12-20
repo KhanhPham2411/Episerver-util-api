@@ -1,11 +1,9 @@
-﻿using EPiServer.Cms.UI.AspNetIdentity;
+using EPiServer.Cms.UI.AspNetIdentity;
 using EPiServer.ServiceLocation;
 using EPiServer.Shell.Security;
-using Foundation.Infrastructure.Cms.Users;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace Foundation.Custom
 {
@@ -13,8 +11,8 @@ namespace Foundation.Custom
     [Route("user-api")]
     public class UserApiController : ControllerBase
     {
-        private readonly ApplicationDbContext<SiteUser> _db;
-        public UserApiController(ApplicationDbContext<SiteUser> db)
+        private readonly ApplicationDbContext<ApplicationUser> _db;
+        public UserApiController(ApplicationDbContext<ApplicationUser> db)
         {
             _db = db;
         }
@@ -27,14 +25,14 @@ namespace Foundation.Custom
             var userDb = await _db.Users.FirstOrDefaultAsync(u => u.Email.ToLower().Equals(user.Name.ToLower()));
             if (!string.IsNullOrEmpty(firstName))
             {
-                userDb.FirstName = firstName;
+                userDb.UserName = firstName;
                 _db.Users.Update(userDb);
                 await _db.SaveChangesAsync();
                 userDb = await _db.Users.FirstOrDefaultAsync(u => u.Email.ToLower().Equals(user.Name.ToLower()));
             }
-            return Ok(userDb.FirstName ?? "it's null");
-        } 
-        
+            return Ok(userDb.UserName ?? "it's null");
+        }
+
         [HttpGet]
         [Route("create-user")]
         public async Task<ActionResult<string>> CreateUser([FromQuery] string username = null)
@@ -83,6 +81,6 @@ namespace Foundation.Custom
             log += "Email: " + email;
 
             return Ok(log);
-        } 
+        }
     }
 }
