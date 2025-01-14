@@ -30,17 +30,28 @@ namespace Foundation.Custom
         {
             string log = "";
 
-
-
             var child = _contentRepository.GetChildren<CatalogContent>(_referenceConverter.GetRootLink());
             var childCustom = _contentRepository.GetChildren<CustomCatalog>(_referenceConverter.GetRootLink());
-
-
-
-
 
             return Ok(log);
         }
 
+
+        [HttpGet]
+        [Route("get")]
+        public async Task<ActionResult<string>> get()
+        {
+            string log = "";
+
+            var secondChild = _contentRepository.GetChildren<CatalogContent>(_referenceConverter.GetRootLink())
+                        .Skip(1)
+                        .FirstOrDefault();
+
+            var customCatalog = _contentRepository.Get<CustomCatalog>(secondChild.ContentLink);
+
+            var value = customCatalog.DemoText;
+
+            return Ok(value);
+        }
     }
 }
