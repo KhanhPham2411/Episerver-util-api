@@ -1,8 +1,7 @@
-﻿@using EPiServer.Web.Mvc.Html
+@using EPiServer.Web.Mvc.Html
 @model Foundation.Features.CustomCatalog.CatalogBaseViewModel
 
 <h1>@Model.CurrentContent.Name</h1>
 
-@Html.PropertyFor(m => m.CurrentContent.Text, new { HasContainer = false, HasChildrenContainer = false })
+@Html.PropertyFor(m => m.CurrentContent.DemoText, new { HasContainer = false, HasChildrenContainer = false })
 
-@Html.PropertyFor(m => m.CurrentContent.MainContentArea, new { HasContainer = false, HasChildrenContainer = false })
