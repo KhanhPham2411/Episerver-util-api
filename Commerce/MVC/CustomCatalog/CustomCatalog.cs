@@ -12,20 +12,12 @@ namespace Foundation.Features.CustomCatalog
     public class CustomCatalog : EPiServer.Commerce.Catalog.ContentTypes.CatalogContent
     {
         [Display(
-            Name = "Main Content Area",
-            Order = 5,
-            GroupName = SystemTabNames.Content)]
-        [CultureSpecific]
-        [Tokenize]
-        public virtual ContentArea MainContentArea { get; set; }
-
-        [Display(
-            Name = "Text",
-            Description = "Text field",
+            Name = "DemoText",
+            Description = "DemoText field",
             GroupName = SystemTabNames.Content,
             Order = 100)]
         [CultureSpecific]
-        public virtual string Text { get; set; }
+        public virtual string DemoText { get; set; }
 
 
         public override void SetDefaultValues(ContentType contentType)
