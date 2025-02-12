@@ -4,6 +4,7 @@ using EPiServer.Framework.Initialization;
 using EPiServer.ServiceLocation;
 using EPiServer.DataAbstraction;
 
+// Fix: Content type "CatalogImportExportFolder" is not allowed to be created under parent of content type "SysRoot"
 namespace Web.Business.Initialization
 {
     [InitializableModule]
