@@ -26,6 +26,7 @@ namespace Foundation.Features.Home
             string log = "";
             //TrackingResponseData result = _trackingService.Service.Track(commerceTrackingData, httpContext, content, Scope);
             var group = (ViewData["epi_Recommendations"] as IEnumerable<RecommendationGroup>) ?? Enumerable.Empty<RecommendationGroup>();
+            // Product recommendations
             var recommendations = group
                 .Where(x => x.Area == "homeWidget")
                 .SelectMany(x => x.Recommendations);
