@@ -11,11 +11,16 @@ namespace Foundation.Custom
     public class MigrationApiController : ControllerBase
     {
         private readonly IRootServiceScopeFactory _rootServiceScopeFactory;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly MigrateActionUrlResolver _migrateActionUrlResolver;
+
 
         public MigrationApiController(
-            IRootServiceScopeFactory rootServiceScopeFactory)
+            IRootServiceScopeFactory rootServiceScopeFactory, IHttpContextAccessor httpContextAccessor, MigrateActionUrlResolver migrateActionUrlResolver)
         {
             _rootServiceScopeFactory = rootServiceScopeFactory;
+            _httpContextAccessor = httpContextAccessor;
+            _migrateActionUrlResolver = migrateActionUrlResolver;
         }
 
         [HttpGet]
@@ -32,5 +37,15 @@ namespace Foundation.Custom
             return Ok(log);
         }
 
+        [HttpGet]
+        [Route("url")]
+        public async Task<ActionResult<string>> Url([FromQuery] string demo = "")
+        {
+            string log = "";
+
+            var path = _migrateActionUrlResolver(_httpContextAccessor.HttpContext, "index");
+
+            return Ok(path);
+        }
     }
 }
