@@ -13,6 +13,6 @@ GO
 
 UPDATE [dbo].[tblBigTable]
    SET Boolean01 = 1
- WHERE Boolean01 = 0
+ WHERE StoreName LIKE '%Step%' and Boolean01 = 0
 GO
 
