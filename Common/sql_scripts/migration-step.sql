@@ -11,4 +11,8 @@ UPDATE [dbo].[tblBigTable]
  WHERE String01 = 'EPiServer.Commerce.Internal.Migration.Steps.RemoveOrphanedMetaKeysStep'
 GO
 
+UPDATE [dbo].[tblBigTable]
+   SET Boolean01 = 1
+ WHERE Boolean01 = 0
+GO
 
