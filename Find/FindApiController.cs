@@ -32,6 +32,25 @@ namespace Foundation.Custom
             return Ok(log);
         }
 
+        // https://docs.developers.optimizely.com/digital-experience-platform/v1.1.0-search-and-navigation/docs/terms-facets
+        [HttpGet]
+        [Route("facet")]
+        public async Task<ActionResult<string>> facet([FromQuery] string keyword = "a")
+        {
+            string log = "";
+        
+            var searchResult = _client.Search<GenericProduct>()
+                .TermsFacetFor(x => x.Industries)
+                .GetContentResult();
+        
+            var terms = searchResult.TermsFacetFor(x => x.Industries).Terms;
+        
+            log += "Industries: \n";
+            log += string.Join("\n", terms.Select(s => $"{s.Term}: {s.Count}"));
+        
+            return Ok(log);
+        }
+
         [HttpGet]
         [Route("InFields")]
         public async Task<ActionResult<string>> InFields([FromQuery] string keyword = "a")
