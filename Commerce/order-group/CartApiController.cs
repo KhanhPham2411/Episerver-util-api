@@ -16,7 +16,7 @@ namespace Foundation.Custom
     public class CustomCartApiController : ControllerBase
     {
         
-        public CartApiController()
+        public CustomCartApiController()
         {
 
         }
@@ -115,19 +115,19 @@ namespace Foundation.Custom
       
         [HttpGet]
         [Route("add-basic")]
-        public async Task<ActionResult<string>> AddBasic()
+        public async Task<ActionResult<string>> AddBasic([FromQuery] string[]? codes = null)
         {
             var uiSignInManager = ServiceLocator.Current.GetInstance<UISignInManager>();
             var _orderGroupFactory = ServiceLocator.Current.GetInstance<IOrderGroupFactory>();
             var orderRepository = ServiceLocator.Current.GetInstance<IOrderRepository>();
-          
+        
             var log = "";
             var cart = orderRepository.LoadOrCreateCart<ICart>(CustomerContext.Current.CurrentContactId, "Default");
-
-            
-            string[] codes = { "HZ-HO-7726-AA-54", "HZ-HO-7726-GR-54" };
-
-            foreach (var code in codes) 
+        
+        
+            codes ??= ["CN250201_PSK1", "CN250202_PSK1"];
+        
+            foreach (var code in codes)
             {
                 var quantity = 1;
                 var lineItem = cart.GetAllLineItems().FirstOrDefault(x => x.Code == code && !x.IsGift);
@@ -136,20 +136,25 @@ namespace Foundation.Custom
                     lineItem = cart.CreateLineItem(code, _orderGroupFactory);
                     //lineItem.DisplayName = entryContent.DisplayName;
                     lineItem.Quantity = quantity;
+                    lineItem.PlacedPrice = 1000;
+                    
                     cart.AddLineItem(lineItem, _orderGroupFactory);
-
+        
                     log += $"add {code} to the cart \n";
                 }
                 else
                 {
                     //var shipment = cart.GetFirstShipment();
                     //cart.UpdateLineItemQuantity(shipment, lineItem, lineItem.Quantity + quantity);
-
+        
                     log += $"{code} already exist \n";
                 }
             }
-            orderRepository.Save(cart);
-
+        
+            // orderRepository.Save(cart);
+            orderRepository.SaveAsPurchaseOrder(cart);
+        
+        
             return Ok(log);
         }
     }
