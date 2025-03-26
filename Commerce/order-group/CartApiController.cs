@@ -3,7 +3,6 @@ using EPiServer.Commerce.Order;
 using EPiServer.Commerce.Orders.Internal;
 using EPiServer.ServiceLocation;
 using EPiServer.Shell.Security;
-using HolmenExternal.Domain.Features.Commerce.Shared.Customer;
 using Mediachase.Commerce.Customers;
 using Mediachase.Commerce.Orders;
 using Microsoft.AspNetCore.Mvc;
