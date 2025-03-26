@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Foundation.Custom
 {
     [ApiController]
-    [Route("cart-api")]
-    public class CartApiController : ControllerBase
+    [Route("customcart")]
+    public class CustomCartApiController : ControllerBase
     {
         
         public CartApiController()
