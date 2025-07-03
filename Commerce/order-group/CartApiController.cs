@@ -29,8 +29,7 @@ namespace Foundation.Custom
             var _orderGroupFactory = ServiceLocator.Current.GetInstance<IOrderGroupFactory>();
             var orderRepository = ServiceLocator.Current.GetInstance<IOrderRepository>();
             var _orderValidationService = ServiceLocator.Current.GetInstance<OrderValidationService>();
-            var cartService = ServiceLocator.Current.GetInstance<ICartService>();
-            var _inventoryService = ServiceLocator.Current.GetInstance<IInventoryService>();
+            //var _inventoryService = ServiceLocator.Current.GetInstance<IInventoryService>();
             var _referenceConverter = ServiceLocator.Current.GetInstance<ReferenceConverter>();
             var _contentLoader = ServiceLocator.Current.GetInstance<IContentLoader>();
 
@@ -49,7 +48,7 @@ namespace Foundation.Custom
                 if (lineItem == null)
                 {
                     var contentLink = _referenceConverter.GetContentLink(code);
-                    var defaultVariation = _contentLoader.Get<VariationContentBase>(contentLink);
+                    //var defaultVariation = _contentLoader.Get<VariationContentBase>(contentLink);
 
                     lineItem = cart.CreateLineItem(code);
                     //lineItem.DisplayName = !string.IsNullOrWhiteSpace(defaultVariation.DisplayName) ? defaultVariation.DisplayName : defaultVariation.Name;
@@ -58,53 +57,53 @@ namespace Foundation.Custom
                     //lineItem.TaxCategoryId = defaultVariation.TaxCategoryId;
                 }
 
-                var inventoryRecord = _inventoryService.QueryByEntry(new List<string>() { code }).FirstOrDefault();
-                if (inventoryRecord != null)
-                {
-                    var shipment = cart.GetFirstForm().Shipments.FirstOrDefault(x => x.WarehouseCode == inventoryRecord.WarehouseCode);
+                //var inventoryRecord = _inventoryService.QueryByEntry(new List<string>() { code }).FirstOrDefault();
+                //if (inventoryRecord != null)
+                //{
+                //    var shipment = cart.GetFirstForm().Shipments.FirstOrDefault(x => x.WarehouseCode == inventoryRecord.WarehouseCode);
 
-                    if (shipment == null)
-                    {
-                        shipment = cart.GetFirstShipment();
+                //    if (shipment == null)
+                //    {
+                //        shipment = cart.GetFirstShipment();
 
-                        if (shipment == null)
-                        {
-                            shipment = cart.CreateShipment();
-                            shipment.WarehouseCode = inventoryRecord.WarehouseCode;
-                            shipment.OrderShipmentStatus = OrderShipmentStatus.AwaitingInventory;
-                            //((Shipment)shipment).ShippingAddressId = ShippingAddressName;
-                            cart.AddShipment(shipment);
-                            cart.AddLineItem(shipment, lineItem);
+                //        if (shipment == null)
+                //        {
+                //            shipment = cart.CreateShipment();
+                //            shipment.WarehouseCode = inventoryRecord.WarehouseCode;
+                //            shipment.OrderShipmentStatus = OrderShipmentStatus.AwaitingInventory;
+                //            //((Shipment)shipment).ShippingAddressId = ShippingAddressName;
+                //            cart.AddShipment(shipment);
+                //            cart.AddLineItem(shipment, lineItem);
 
-                            log += $"add {code} to the cart \n";
-                        }
-                        else if (string.IsNullOrEmpty(shipment.WarehouseCode))
-                        {
-                            shipment.WarehouseCode = inventoryRecord.WarehouseCode;
-                            shipment.OrderShipmentStatus = OrderShipmentStatus.AwaitingInventory;
-                            //((Shipment)shipment).ShippingAddressId = ShippingAddressName;
-                            cart.AddLineItem(shipment, lineItem);
+                //            log += $"add {code} to the cart \n";
+                //        }
+                //        else if (string.IsNullOrEmpty(shipment.WarehouseCode))
+                //        {
+                //            shipment.WarehouseCode = inventoryRecord.WarehouseCode;
+                //            shipment.OrderShipmentStatus = OrderShipmentStatus.AwaitingInventory;
+                //            //((Shipment)shipment).ShippingAddressId = ShippingAddressName;
+                //            cart.AddLineItem(shipment, lineItem);
 
-                            log += $"add {code} to the cart \n";
-                        }
-                        else if (shipment.WarehouseCode != inventoryRecord.WarehouseCode)
-                        {
-                            var newShipment = cart.CreateShipment();
-                            newShipment.WarehouseCode = inventoryRecord.WarehouseCode;
-                            newShipment.OrderShipmentStatus = OrderShipmentStatus.AwaitingInventory;
-                            //((Shipment)shipment).ShippingAddressId = ShippingAddressName;
-                            cart.AddShipment(newShipment);
-                            cart.AddLineItem(newShipment, lineItem);
+                //            log += $"add {code} to the cart \n";
+                //        }
+                //        else if (shipment.WarehouseCode != inventoryRecord.WarehouseCode)
+                //        {
+                //            var newShipment = cart.CreateShipment();
+                //            newShipment.WarehouseCode = inventoryRecord.WarehouseCode;
+                //            newShipment.OrderShipmentStatus = OrderShipmentStatus.AwaitingInventory;
+                //            //((Shipment)shipment).ShippingAddressId = ShippingAddressName;
+                //            cart.AddShipment(newShipment);
+                //            cart.AddLineItem(newShipment, lineItem);
 
-                            log += $"add {code} to the cart \n";
-                        }
-                    }
-                    else if (!shipment.LineItems.Any(x => x.Equals(lineItem)))
-                    {
-                        cart.AddLineItem(shipment, lineItem);
-                        log += $"add {code} to the cart \n";
-                    }
-                }
+                //            log += $"add {code} to the cart \n";
+                //        }
+                //    }
+                //    else if (!shipment.LineItems.Any(x => x.Equals(lineItem)))
+                //    {
+                //        cart.AddLineItem(shipment, lineItem);
+                //        log += $"add {code} to the cart \n";
+                //    }
+                //}
             }
             //var validation = _orderValidationService.ValidateOrder(cart);
 
@@ -125,7 +124,7 @@ namespace Foundation.Custom
             var cart = orderRepository.LoadOrCreateCart<ICart>(CustomerContext.Current.CurrentContactId, "Default");
         
         
-            codes ??= ["CN250201_PSK1", "CN250202_PSK1"];
+            codes ??= new string[] { "CN250201_PSK1", "CN250202_PSK1" };
         
             foreach (var code in codes)
             {

@@ -30,7 +30,7 @@ namespace Foundation.Custom
             var catalogContentLink = _referenceConverter.GetCatalogContentLink(-2147483637);
             // CustomCatalog : EPiServer.Commerce.Catalog.ContentTypes.CatalogContent
             var catalog = _contentRepository.Get<CustomCatalog>(catalogContentLink).CreateWritableClone<CustomCatalog>();
-            log += catalog.Text + "\n";
+            //log += catalog.Text + "\n";
 
             return Ok(log);
         }
@@ -50,7 +50,7 @@ namespace Foundation.Custom
                 .FirstOrDefault();
 
             var catalog = _contentRepository.Get<CustomCatalog>(lastestVersion.ContentLink).CreateWritableClone<CustomCatalog>();
-            log += catalog.Text + "\n";
+            //log += catalog.Text + "\n";
 
 
             return Ok(log);

@@ -33,23 +33,23 @@ namespace Foundation.Custom
         }
 
         // https://docs.developers.optimizely.com/digital-experience-platform/v1.1.0-search-and-navigation/docs/terms-facets
-        [HttpGet]
-        [Route("facet")]
-        public async Task<ActionResult<string>> facet([FromQuery] string keyword = "a")
-        {
-            string log = "";
+        //[HttpGet]
+        //[Route("facet")]
+        //public async Task<ActionResult<string>> facet([FromQuery] string keyword = "a")
+        //{
+        //    string log = "";
         
-            var searchResult = _client.Search<GenericProduct>()
-                .TermsFacetFor(x => x.Industries)
-                .GetContentResult();
+        //    var searchResult = _client.Search<GenericProduct>()
+        //        .TermsFacetFor(x => x.Industries)
+        //        .GetContentResult();
         
-            var terms = searchResult.TermsFacetFor(x => x.Industries).Terms;
+        //    var terms = searchResult.TermsFacetFor(x => x.Industries).Terms;
         
-            log += "Industries: \n";
-            log += string.Join("\n", terms.Select(s => $"{s.Term}: {s.Count}"));
+        //    log += "Industries: \n";
+        //    log += string.Join("\n", terms.Select(s => $"{s.Term}: {s.Count}"));
         
-            return Ok(log);
-        }
+        //    return Ok(log);
+        //}
 
         [HttpGet]
         [Route("InFields")]
