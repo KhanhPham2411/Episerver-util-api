@@ -55,42 +55,6 @@ namespace Foundation.Custom.Episerver_util_api.Commerce.CatalogGroup
         }
 
         /// <summary>
-        /// Archives a catalog entry or node by ContentReference ID.
-        /// Sample usage: POST https://localhost:5000/api/catalog-archive/archive { "contentId": 123 }
-        /// </summary>
-        [HttpPost("archive")]
-        public IActionResult Archive([FromBody] ArchiveRequest request)
-        {
-            try
-            {
-                _catalogArchive.ArchiveContent(new ContentReference(request.ContentId));
-                return Ok(new { success = true, message = $"Content {request.ContentId} archived." });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { success = false, error = ex.Message });
-            }
-        }
-
-        /// <summary>
-        /// Restores an archived entry to a parent.
-        /// Sample usage: POST https://localhost:5000/api/catalog-archive/restore { "contentId": 123, "parentId": 456 }
-        /// </summary>
-        [HttpPost("restore")]
-        public IActionResult Restore([FromBody] RestoreRequest request)
-        {
-            try
-            {
-                _catalogArchive.RestoreArchive(new ContentReference(request.ContentId), new ContentReference(request.ParentId));
-                return Ok(new { success = true, message = $"Content {request.ContentId} restored to parent {request.ParentId}." });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { success = false, error = ex.Message });
-            }
-        }
-
-        /// <summary>
         /// Deletes an archived entry by ContentReference ID.
         /// Sample usage: DELETE https://localhost:5000/api/catalog-archive/delete/123
         /// </summary>
