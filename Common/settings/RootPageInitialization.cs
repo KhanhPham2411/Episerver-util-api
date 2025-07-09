@@ -34,7 +34,7 @@ namespace Web.Business.Initialization
 
 
             // Fix: Content type "CatalogImportExportFolder" is not allowed to be created under parent of content type "SysRoot"
-            setting.AllowedContentTypeNames.Add("CatalogImportExportFolder");
+            //setting.AllowedContentTypeNames.Add("CatalogImportExportFolder");
 
             var sysRoot = contentRepository.Load(RootPage) as PageType;
             var availabilityRepository = serviceLocator.GetInstance<IAvailableSettingsRepository>();

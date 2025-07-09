@@ -13,12 +13,11 @@ using EPiServer.DataAccess;
 namespace Foundation.Custom.EpiserverUtilApi.Commerce.CatalogGroup
 {
     /// <summary>
-    /// API for creating products (SKUs) in Optimizely Commerce.
-    /// Sample usage: https://localhost:5000/util-api/custom-catalog/create-product?productName=TestProduct
-    /// Optionally add &catalogName=TestCatalog to specify a catalog. If not provided, the first catalog under root is used.
+    /// API for creating products (SKUs) and variants in Optimizely Commerce.
+    /// Sample usage: https://localhost:5000/util-api/custom-product/create-product?productName=TestProduct
     /// </summary>
     [ApiController]
-    [Route("util-api/custom-catalog")]
+    [Route("util-api/custom-product")]
     public class CustomProductController : ControllerBase
     {
         private readonly IContentRepository _contentRepository;
@@ -32,7 +31,7 @@ namespace Foundation.Custom.EpiserverUtilApi.Commerce.CatalogGroup
 
         /// <summary>
         /// Creates a product (SKU) in the specified or first catalog.
-        /// Sample usage: https://localhost:5000/util-api/custom-catalog/create-product?productName=TestProduct
+        /// Sample usage: https://localhost:5000/util-api/custom-product/create-product?productName=TestProduct
         /// Optionally add &catalogName=TestCatalog to specify a catalog. If not provided, the first catalog under root is used.
         /// </summary>
         [HttpGet("create-product")]
@@ -66,12 +65,15 @@ namespace Foundation.Custom.EpiserverUtilApi.Commerce.CatalogGroup
                     }
                 }
 
-                // Check if product already exists
-                var existing = _contentRepository.GetChildren<GenericProduct>(catalog.ContentLink)
-                    .FirstOrDefault(p => p.Name.Equals(productName, StringComparison.OrdinalIgnoreCase));
-                if (existing != null)
+                // Efficiently check if product exists by code
+                var productLink = _referenceConverter.GetContentLink(productName, CatalogContentType.CatalogEntry);
+                if (!ContentReference.IsNullOrEmpty(productLink))
                 {
-                    return Ok($"Product already exists: Code={existing.Code}, Name={existing.Name}");
+                    var existing = _contentRepository.Get<GenericProduct>(productLink);
+                    if (existing != null && existing.ParentLink.ID == catalog.ContentLink.ID)
+                    {
+                        return Ok($"Product already exists: Code={existing.Code}, Name={existing.Name}");
+                    }
                 }
 
                 // Create and publish the product
