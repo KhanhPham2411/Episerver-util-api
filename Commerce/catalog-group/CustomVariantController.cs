@@ -106,5 +106,36 @@ namespace Foundation.Custom.EpiserverUtilApi.Commerce.CatalogGroup
                 return BadRequest($"Exception: {ex.Message}\n{ex.StackTrace}");
             }
         }
+
+        /// <summary>
+        /// Deletes a variant (SKU) by code. Example: https://localhost:5000/util-api/custom-variant/delete-variant?variantName=TestVariant
+        /// </summary>
+        [HttpGet("delete-variant")]
+        public IActionResult DeleteVariant(string variantName)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(variantName))
+                {
+                    return BadRequest("variantName is required.");
+                }
+                var variantLink = _referenceConverter.GetContentLink(variantName, CatalogContentType.CatalogEntry);
+                if (ContentReference.IsNullOrEmpty(variantLink))
+                {
+                    return NotFound($"Variant with code '{variantName}' not found.");
+                }
+                var variant = _contentRepository.Get<GenericVariant>(variantLink);
+                if (variant == null)
+                {
+                    return NotFound($"Variant with code '{variantName}' not found.");
+                }
+                _contentRepository.Delete(variantLink, true, AccessLevel.NoAccess);
+                return Ok($"Variant '{variantName}' deleted successfully.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Exception: {ex.Message}\n{ex.StackTrace}");
+            }
+        }
     }
 } 

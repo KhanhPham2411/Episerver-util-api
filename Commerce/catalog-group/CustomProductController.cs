@@ -88,5 +88,36 @@ namespace Foundation.Custom.EpiserverUtilApi.Commerce.CatalogGroup
                 return BadRequest($"Exception: {ex.Message}\n{ex.StackTrace}");
             }
         }
+
+        /// <summary>
+        /// Deletes a product (SKU) by code. Example: https://localhost:5000/util-api/custom-product/delete-product?productName=TestProduct
+        /// </summary>
+        [HttpGet("delete-product")]
+        public IActionResult DeleteProduct(string productName)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(productName))
+                {
+                    return BadRequest("productName is required.");
+                }
+                var productLink = _referenceConverter.GetContentLink(productName, CatalogContentType.CatalogEntry);
+                if (ContentReference.IsNullOrEmpty(productLink))
+                {
+                    return NotFound($"Product with code '{productName}' not found.");
+                }
+                var product = _contentRepository.Get<GenericProduct>(productLink);
+                if (product == null)
+                {
+                    return NotFound($"Product with code '{productName}' not found.");
+                }
+                _contentRepository.Delete(productLink, true, AccessLevel.NoAccess);
+                return Ok($"Product '{productName}' deleted successfully.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Exception: {ex.Message}\n{ex.StackTrace}");
+            }
+        }
     }
 } 
