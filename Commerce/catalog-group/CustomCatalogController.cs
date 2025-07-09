@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using Mediachase.Commerce.Catalog;
 using Mediachase.Commerce.Catalog.Dto;
+using System.Linq;
 
 namespace Foundation.Custom.EpiserverUtilApi.Commerce.CatalogGroup
 {
@@ -22,6 +23,13 @@ namespace Foundation.Custom.EpiserverUtilApi.Commerce.CatalogGroup
         {
             try
             {
+                var allCatalogsDto = CatalogContext.Current.GetCatalogDto();
+                var existing = allCatalogsDto.Catalog.FirstOrDefault(x => x.Name.Equals(catalogName, StringComparison.OrdinalIgnoreCase));
+                if (existing != null)
+                {
+                    return Ok($"Catalog already exists: ID={existing.CatalogId}, Name={existing.Name}");
+                }
+
                 var now = DateTime.UtcNow;
                 var catalogDto = new CatalogDto();
                 catalogDto.Catalog.AddCatalogRow(
