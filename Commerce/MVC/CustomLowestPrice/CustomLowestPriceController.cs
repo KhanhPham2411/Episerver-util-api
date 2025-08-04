@@ -279,10 +279,10 @@ namespace Foundation.Features.CustomLowestPrice
 
                 var comparison = new
                 {
-                    EntryCode = entryCode,
-                    //ServiceImplementation = serviceImpl?.Value,
-                    CurrentImplementation = currentImpl?.Value,
-                    FixedImplementation = fixedImpl?.Value,
+                    // EntryCode = entryCode,
+                    // ServiceImplementation = serviceImpl?.Value,
+                    Actual = currentImpl?.Value,
+                    Expected = fixedImpl?.Value,
                     //Difference = new
                     //{
                     //    ServiceCount = ((dynamic)serviceImpl?.Value)?.Count ?? 0,
