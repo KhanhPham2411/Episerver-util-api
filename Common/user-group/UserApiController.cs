@@ -13,27 +13,12 @@ namespace Foundation.Custom
     [Route("user-api")]
     public class UserApiController : ControllerBase
     {
-        private readonly ApplicationDbContext<ApplicationUser> _db;
-        public UserApiController(ApplicationDbContext<ApplicationUser> db)
+
+        public UserApiController()
         {
-            _db = db;
+           
         }
 
-        [HttpGet]
-        [Route("test-user")]
-        public async Task<ActionResult<string>> TestUser([FromQuery] string firstName = null)
-        {
-            var user = HttpContext.User.Identity;
-            var userDb = await _db.Users.FirstOrDefaultAsync(u => u.Email.ToLower().Equals(user.Name.ToLower()));
-            if (!string.IsNullOrEmpty(firstName))
-            {
-                userDb.UserName = firstName;
-                _db.Users.Update(userDb);
-                await _db.SaveChangesAsync();
-                userDb = await _db.Users.FirstOrDefaultAsync(u => u.Email.ToLower().Equals(user.Name.ToLower()));
-            }
-            return Ok(userDb.UserName ?? "it's null");
-        }
 
         [HttpGet]
         [Route("create-user")]
