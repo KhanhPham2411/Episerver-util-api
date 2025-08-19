@@ -1,4 +1,5 @@
-SELECT TOP (1000) c.[pkID], lb.[LanguageID], lb.[Name]
+SELECT TOP (1000) c.[pkID], lb.[LanguageID]
+	,lb.[Name] as LanguageName
 	,cl.[Created],cl.[Name] ,ct.[Name] as TypeName
 	,cl.[URLSegment]
 	,[fkParentID]
