@@ -128,7 +128,7 @@ namespace Foundation.Custom.EpiserverUtilApi.Commerce.OrderGroup
             }
             catch (Exception ex)
             {
-                return BadRequest($"Exception: {ex.Message}\n{ex.StackTrace}");
+                return BadRequest($"Exception: {ex.Message}\n{ex.InnerException?.Message}\n{ex.StackTrace}");
             }
         }
 
