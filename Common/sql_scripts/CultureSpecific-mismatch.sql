@@ -1,17 +1,23 @@
 SELECT 
-    ObjectId,
-    MetaFieldId,
-    MetaFieldName,
-    LanguageName,
-    CultureSpecific
-FROM CatalogContentProperty 
-WHERE ObjectId = 67348 
-  AND ObjectTypeId = 0
-  AND MetaFieldId IN (
-    SELECT MetaFieldId
-    FROM CatalogContentProperty 
-    WHERE ObjectId = 67348 AND ObjectTypeId = 0
-    GROUP BY MetaFieldId
+    p.ObjectId,
+    p.ObjectTypeId,
+    p.MetaFieldId,
+    p.MetaFieldName,
+    p.LanguageName,
+    p.CultureSpecific
+FROM CatalogContentProperty p
+JOIN (
+    SELECT
+        ObjectId,
+        ObjectTypeId,
+        MetaFieldId
+    FROM CatalogContentProperty
+    -- Optional: restrict to entries only
+    -- WHERE ObjectTypeId = 0
+    GROUP BY ObjectId, ObjectTypeId, MetaFieldId
     HAVING COUNT(DISTINCT CultureSpecific) > 1
-  )
-ORDER BY MetaFieldName, LanguageName, CultureSpecific;
+) bad
+  ON bad.ObjectId = p.ObjectId
+ AND bad.ObjectTypeId = p.ObjectTypeId
+ AND bad.MetaFieldId = p.MetaFieldId
+ORDER BY p.ObjectId, p.MetaFieldName, p.LanguageName, p.CultureSpecific;
