@@ -1,7 +1,7 @@
 -- Compare the result between the environment to check if all migration steps are run successfully
 SELECT TOP (1000) String01, StoreName, Boolean01, DateTime01
 FROM [dbo].[tblBigTable]
-WHERE StoreName LIKE '%Step%'
+WHERE StoreName LIKE '%EPiServer.Commerce.Internal.Migration%'
 ORDER BY DateTime01 DESC
 
 
