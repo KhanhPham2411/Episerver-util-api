@@ -61,6 +61,8 @@ namespace Foundation.Custom.EpiserverUtilApi.Commerce.CatalogGroup
                     return BadRequest("No catalogs found under root.");
                 }
 
+                
+
                 // Find the category node
                 var categoryLink = _referenceConverter.GetContentLink(categoryCode, CatalogContentType.CatalogNode);
                 if (ContentReference.IsNullOrEmpty(categoryLink))
@@ -74,24 +76,55 @@ namespace Foundation.Custom.EpiserverUtilApi.Commerce.CatalogGroup
                     return BadRequest($"Category with code '{categoryCode}' not found.");
                 }
 
-                // Create product with specific parent category
-                var product = _contentRepository.GetDefault<GenericProduct>(category.ContentLink);
-                product.Name = productName;
-                product.Code = productName.Replace(" ", "_").ToLower();
-                product.DisplayName = productName;
+                // Check if product already exists
+                GenericProduct currentProduct = null;
+                var productCode = productName.Replace(" ", "_").ToLower();
+                var existingProductLink = _referenceConverter.GetContentLink(productCode, CatalogContentType.CatalogEntry);
+                if (!ContentReference.IsNullOrEmpty(existingProductLink))
+                {
+                    var existingProduct = _contentLoader.Get<GenericProduct>(existingProductLink);
+                    if (existingProduct != null)
+                    {
+                        //return Ok(new
+                        //{
+                        //    Message = "Product already exists",
+                        //    ProductCode = existingProduct.Code,
+                        //    ProductName = existingProduct.Name,
+                        //    ParentLink = existingProduct.ParentLink.ToString(),
+                        //    ProductUrl = _urlResolver.GetUrl(existingProduct.ContentLink),
+                        //    Step = "1 - Product already exists, skipping creation"
+                        //});
+                        currentProduct = existingProduct;
+                    }
+                }
+                
+                if (currentProduct == null)
+                {
+                    // Create product with specific parent category
+                    var product = _contentRepository.GetDefault<GenericProduct>(category.ContentLink);
+                    product.Name = productName;
+                    product.Code = productName.Replace(" ", "_").ToLower();
+                    product.DisplayName = productName;
 
-                _contentRepository.Save(product, SaveAction.Publish, AccessLevel.NoAccess);
+                    currentProduct = product;
+                }
+
+                var writableProduct = currentProduct.CreateWritableClone<GenericProduct>();
+
+                writableProduct.ParentLink = categoryLink;
+                _contentRepository.Save(writableProduct, SaveAction.Publish, AccessLevel.NoAccess);
+
 
                 // Get the product URL
-                var productUrl = _urlResolver.GetUrl(product.ContentLink);
+                var productUrl = _urlResolver.GetUrl(writableProduct.ContentLink);
 
                 return Ok(new
                 {
                     Message = "Test product created successfully",
-                    ProductCode = product.Code,
-                    ProductName = product.Name,
+                    ProductCode = writableProduct.Code,
+                    ProductName = writableProduct.Name,
                     PrimaryCategory = category.Code,
-                    ParentLink = product.ParentLink.ToString(),
+                    ParentLink = writableProduct.ParentLink.ToString(),
                     ProductUrl = productUrl,
                     Step = "1 - Product created with primary category"
                 });
