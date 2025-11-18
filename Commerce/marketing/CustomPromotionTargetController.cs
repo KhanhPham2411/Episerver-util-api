@@ -26,7 +26,7 @@ namespace Foundation.Custom.EpiserverUtilApi.Commerce.Marketing
 
         /// <summary>
         /// Step 1 – evaluate explicit variant targets. Sample URL: https://localhost:5000/util-api/custom-promotion-target/step1-variant
-        /// Sample JSON: { "codes": ["SKU-40707713","SKU-40707735"], "targetEntries": [2,3], "matchRecursive": true }
+        /// Sample JSON: { "codes": ["SKU-40707713","SKU-40707735"], "targetEntries": [2,3,5,6,8,9,11,12,14,15], "matchRecursive": true }
         /// </summary>
         [HttpPost("step1-variant")]
         public IActionResult EvaluateVariantTargets([FromBody] VariantTargetRequest request)
@@ -115,7 +115,7 @@ namespace Foundation.Custom.EpiserverUtilApi.Commerce.Marketing
 
         /// <summary>
         /// Step 3 – compare explicit variant vs category targets. Sample URL: https://localhost:5000/util-api/custom-promotion-target/step3-compare
-        /// Sample JSON: { "codes": ["SKU-40707713","SKU-40707735"], "targetEntries": [2,3], "categoryId": 3, "matchRecursive": true }
+        /// Sample JSON: { "codes": ["SKU-40707713","SKU-40707735"], "targetEntries": [2,3,5,6,8,9,11,12,14,15], "categoryId": 3, "matchRecursive": true }
         /// </summary>
         [HttpPost("step3-compare")]
         public IActionResult CompareTargets([FromBody] CompareTargetsRequest request)
