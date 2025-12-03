@@ -7,6 +7,7 @@ SELECT  TOP(100) item.Name, log.[Text],
 	log.[Server],
 	item.LastExec, item.NextExec,
 	item.IsRunning,
+	item.LastPing,
 	CASE log.[Status]
         WHEN 0 THEN 'Unknown'
         WHEN 1 THEN 'Succeeded'      -- ✅ SUCCESS
