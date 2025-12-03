@@ -1,4 +1,11 @@
 SELECT  TOP(100) item.Name, log.[Text],
+	CASE log.[Trigger]
+        WHEN 0 THEN 'Unknown'
+        WHEN 1 THEN 'Scheduler'      -- ⏰ Automatic/Scheduled
+        WHEN 2 THEN 'User'           -- 👤 Manual
+        WHEN 3 THEN 'Restart'         -- 🔄 Restart
+        ELSE 'Unknown Trigger'
+    END as TriggerType,
 	log.[Exec], 
 	-- log.Duration, 
 	-- (log.Duration) * POWER(10.00000000000,-7) / 60 as Minutes,
@@ -7,7 +14,7 @@ SELECT  TOP(100) item.Name, log.[Text],
 	log.[Server],
 	item.LastExec, item.NextExec,
 	item.IsRunning,
-	item.LastPing,
+	
 	CASE log.[Status]
         WHEN 0 THEN 'Unknown'
         WHEN 1 THEN 'Succeeded'      -- ✅ SUCCESS
