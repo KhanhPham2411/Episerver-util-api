@@ -1,4 +1,11 @@
 SELECT  TOP(100) item.Name, log.[Text],
+	CASE log.[Trigger]
+        WHEN 0 THEN 'Unknown'
+        WHEN 1 THEN 'Scheduler'      -- ⏰ Automatic/Scheduled
+        WHEN 2 THEN 'User'           -- 👤 Manual
+        WHEN 3 THEN 'Restart'         -- 🔄 Restart
+        ELSE 'Unknown Trigger'
+    END as TriggerType,
 	log.[Exec], 
 	-- log.Duration, 
 	-- (log.Duration) * POWER(10.00000000000,-7) / 60 as Minutes,
@@ -6,6 +13,8 @@ SELECT  TOP(100) item.Name, log.[Text],
     item.DatePart, item.Interval, 
 	log.[Server],
 	item.LastExec, item.NextExec,
+	item.IsRunning,
+	item.LastPing,
 	CASE log.[Status]
         WHEN 0 THEN 'Unknown'
         WHEN 1 THEN 'Succeeded'      -- ✅ SUCCESS
@@ -14,7 +23,7 @@ SELECT  TOP(100) item.Name, log.[Text],
         WHEN 4 THEN 'UnableToStart'
         WHEN 5 THEN 'Aborted'
         ELSE 'Unknown Status'
-    END as StatusText,
+    END as StatusText
 FROM [tblScheduledItemLog] as log INNER JOIN [tblScheduledItem] as item
 ON log.fkScheduledItemId = item.pkID
 --where CONVERT(VARCHAR(25), log.[Exec], 126) LIKE '2020-06-29%' AND log.Text like  '%publish%'
