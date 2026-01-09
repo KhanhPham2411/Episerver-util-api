@@ -12,8 +12,8 @@ SELECT  TOP(100) item.Name, log.[Text],
     item.DatePart, item.Interval,
 	log.[Exec], 
 	log.[Server],
-	item.LastExec, item.NextExec,
 	item.IsRunning,
+	item.LastExec, item.NextExec,
 	item.LastPing,
 	CASE log.[Status]
         WHEN 0 THEN 'Unknown'
