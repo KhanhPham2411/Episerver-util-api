@@ -6,11 +6,11 @@ SELECT  TOP(100) item.Name, log.[Text],
         WHEN 3 THEN 'Restart'         -- 🔄 Restart
         ELSE 'Unknown Trigger'
     END as TriggerType,
-	log.[Exec], 
 	-- log.Duration, 
 	-- (log.Duration) * POWER(10.00000000000,-7) / 60 as Minutes,
     (log.Duration) * POWER(10.00000000000,-7) / 360 as Seconds,
-    item.DatePart, item.Interval, 
+    item.DatePart, item.Interval,
+	log.[Exec], 
 	log.[Server],
 	item.LastExec, item.NextExec,
 	item.IsRunning,
