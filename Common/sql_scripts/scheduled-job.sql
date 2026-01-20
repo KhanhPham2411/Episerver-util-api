@@ -7,7 +7,7 @@ SELECT  TOP(100) item.Name, log.[Text],
         ELSE 'Unknown Trigger'
     END as TriggerType,
 	-- log.Duration, 
-	-- (log.Duration) * POWER(10.00000000000,-7) / 60 as Minutes,
+	(log.Duration) * POWER(10.00000000000,-7) / 60 as Minutes,
     (log.Duration) * POWER(10.00000000000,-7) / 360 as Seconds,
     item.DatePart, item.Interval,
 	log.[Exec], 
