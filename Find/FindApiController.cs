@@ -24,7 +24,7 @@ namespace Foundation.Custom
         {
             string log = "";
 
-            var searchResult = _client.Search<GenericProduct>()
+            var searchResult = _client.Search<IContent>()
                   .For(keyword)
                   .GetContentResult();
 
