@@ -385,15 +385,20 @@ namespace Foundation.Custom.EpiserverUtilApi.Commerce.CatalogGroup
 
         /// <summary>
         /// Step 5: Add multiple products to a catalog node for testing archive timeout issues.
-        /// This endpoint creates the specified number of products under a node to help replicate the timeout scenario.
-        /// Sample usage: https://localhost:5000/util-api/custom-archive-timeout/add-products?nodeId=4&count=100
+        /// This endpoint creates the specified number of products under a node (resolved by node code) to help replicate the timeout scenario.
+        /// Sample usage: https://localhost:5000/util-api/custom-archive-timeout/add-products?nodeCode=womens-shirts&count=100
         /// </summary>
         [HttpGet("add-products")]
-        public IActionResult AddProducts(int nodeId, int count = 10, string productPrefix = "TestProduct")
+        public IActionResult AddProducts(string nodeCode, int count = 10, string productPrefix = "TestProduct")
         {
             var stopwatch = Stopwatch.StartNew();
             try
             {
+                if (string.IsNullOrWhiteSpace(nodeCode))
+                {
+                    return BadRequest(new { success = false, message = "nodeCode is required" });
+                }
+
                 if (count <= 0)
                 {
                     return BadRequest(new { success = false, message = "Count must be greater than 0" });
@@ -404,16 +409,20 @@ namespace Foundation.Custom.EpiserverUtilApi.Commerce.CatalogGroup
                     return BadRequest(new { success = false, message = "Count cannot exceed 10,000 products per request" });
                 }
 
-                var nodeContentLink = _referenceConverter.GetNodeContentLink(nodeId);
+                // Resolve node by code instead of numeric id
+                var nodeContentLink = _referenceConverter.GetContentLink(nodeCode, CatalogContentType.CatalogNode);
                 if (ContentReference.IsNullOrEmpty(nodeContentLink))
                 {
-                    return BadRequest(new { success = false, message = $"Node with ID {nodeId} not found" });
+                    return BadRequest(new { success = false, message = $"Node with code '{nodeCode}' not found" });
                 }
 
                 if (!_contentRepository.TryGet<NodeContent>(nodeContentLink, out var nodeContent))
                 {
-                    return BadRequest(new { success = false, message = $"Could not load node content for ID {nodeId}" });
+                    return BadRequest(new { success = false, message = $"Could not load node content for code '{nodeCode}'" });
                 }
+
+                // Get numeric node id for statistics / logging
+                var nodeId = _referenceConverter.GetObjectId(nodeContentLink);
 
                 var createdProducts = new List<object>();
                 var failedCount = 0;
@@ -478,7 +487,8 @@ namespace Foundation.Custom.EpiserverUtilApi.Commerce.CatalogGroup
                 return Ok(new
                 {
                     success = true,
-                    message = $"Created {createdProducts.Count} products under node {nodeId}",
+                    message = $"Created {createdProducts.Count} products under node '{nodeCode}'",
+                    nodeCode = nodeCode,
                     nodeId = nodeId,
                     nodeName = nodeContent.Name,
                     requestedCount = count,
